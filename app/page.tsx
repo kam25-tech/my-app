@@ -4,25 +4,25 @@ import Image from "next/image";
 import { supabase } from "../lib/supabaseClient";
 import { useState } from "react";
 
-type Todo = {
+type Url = {
   id: number;
   title: string;
-  is_done: boolean;
+  url: string;
   created_at: string;
 };
 
 export default function Home() {
-  const [todos, setTodos] = useState<Todo[]>([]);
+  const [urls, setUrls] = useState<Url[]>([]);
   const [loading, setLoading] = useState(false);
 
   const fetchTodos = async () => {
     setLoading(true);
-    const { data, error } = await supabase.from("todos").select("*");
+    const { data, error } = await supabase.from("recommend_url").select("*");
     if (error) {
       console.error(error);
       alert("データ取得に失敗しました");
     } else {
-      setTodos(data || []);
+      setUrls(data || []);
     }
     setLoading(false);
   };
@@ -53,25 +53,30 @@ export default function Home() {
         </button>
 
         <div className="mt-8 w-full max-w-3xl">
-          {todos.length > 0 ? (
+          {urls.length > 0 ? (
             <table className="w-full border-collapse border border-gray-300 text-center bg-white shadow rounded-lg">
               <thead className="bg-gray-100">
                 <tr>
-                  <th className="border border-gray-300 px-4 py-2">ID</th>
-                  <th className="border border-gray-300 px-4 py-2">タイトル</th>
-                  <th className="border border-gray-300 px-4 py-2">完了</th>
-                  <th className="border border-gray-300 px-4 py-2">作成日時</th>
+                  <th className="border border-gray-300 px-4 py-2">No</th>
+                  <th className="border border-gray-300 px-4 py-2">title</th>
+                  <th className="border border-gray-300 px-4 py-2">
+                    created_date
+                  </th>
                 </tr>
               </thead>
               <tbody>
-                {todos.map((t) => (
+                {urls.map((t) => (
                   <tr key={t.id} className="hover:bg-gray-50">
                     <td className="border border-gray-300 px-4 py-2">{t.id}</td>
                     <td className="border border-gray-300 px-4 py-2">
-                      {t.title}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {t.is_done ? "✅" : "❌"}
+                      <a
+                        href={t.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 font-semibold hover:underline hover:text-blue-800 transition-colors"
+                      >
+                        {t.title}
+                      </a>
                     </td>
                     <td className="border border-gray-300 px-4 py-2">
                       {new Date(t.created_at).toLocaleString("ja-JP")}
